@@ -1,8 +1,9 @@
 const req = require('supertest')
 const app = require('../app')
-const cleanUser = require('./helper/cleanUser')
-const seeder = require('./helper/seeder')
-
+const {cleanUser} = require('./helper/cleanDb')
+const {seederUser} = require('./helper/seeder')
+    
+        
 describe('POST /register',function(){
     afterAll((done)=>{
         cleanUser()
@@ -20,7 +21,7 @@ describe('POST /register',function(){
         const body = {
             firstname:'some',
             lastname:'one',
-            email: 'a@gmail.com',
+            email: 'b@gmail.com',
             password: '123456',
             role: 'admin'
         };
@@ -48,7 +49,168 @@ describe('POST /register',function(){
         })
     })
 
-    //empty text
+    //firstname empty
+    it('firstname empty should send response 400 status code', function(done){
+        //setup
+        const body = {
+            firstname:'',
+            lastname:'one',
+            email: 'b@gmail.com',
+            password: '123456',
+            role: 'admin'
+        };
+        //execute
+        req(app)
+        .post('/register')
+        .send(body)
+        .end(function(err,res){
+            if (err) done(err)
+
+            //assert
+            expect(res.statusCode).toEqual(400)
+            expect(typeof res.body).toEqual('object')
+            expect(res.body).toEqual(
+                expect.arrayContaining(['Validation notEmpty on firstname failed'])
+            )
+            done()
+        })
+    })
+
+    //lastname empty
+    it('lastname empty should send response 400 status code', function(done){
+        //setup
+        const body = {
+            firstname:'some',
+            lastname:'',
+            email: 'b@gmail.com',
+            password: '123456',
+            role: 'admin'
+        };
+        //execute
+        req(app)
+        .post('/register')
+        .send(body)
+        .end(function(err,res){
+            if (err) done(err)
+
+            //assert
+            expect(res.statusCode).toEqual(400)
+            expect(typeof res.body).toEqual('object')
+            expect(res.body).toEqual(
+                expect.arrayContaining(['Validation notEmpty on lastname failed'])
+            )
+            done()
+        })
+    })
+
+    //email empty
+    it('email empty should send response 400 status code', function(done){
+        //setup
+        const body = {
+            firstname:'some',
+            lastname:'one',
+            email: '',
+            password: '123456',
+            role: 'admin'
+        };
+        //execute
+        req(app)
+        .post('/register')
+        .send(body)
+        .end(function(err,res){
+            if (err) done(err)
+
+            //assert
+            expect(res.statusCode).toEqual(400)
+            expect(typeof res.body).toEqual('object')
+            expect(res.body).toEqual(
+                expect.arrayContaining(['Validation notEmpty on email failed'])
+            )
+            done()
+        })
+    })
+
+    //password empty
+    it('password empty should send response 400 status code', function(done){
+        //setup
+        const body = {
+            firstname:'some',
+            lastname:'one',
+            email: 'b@gmail.com',
+            password: '',
+            role: 'admin'
+        };
+        //execute
+        req(app)
+        .post('/register')
+        .send(body)
+        .end(function(err,res){
+            if (err) done(err)
+
+            //assert
+            expect(res.statusCode).toEqual(400)
+            expect(typeof res.body).toEqual('object')
+            expect(res.body).toEqual(
+                expect.arrayContaining(['Validation notEmpty on password failed'])
+            )
+            done()
+        })
+    })
+
+    //role empty
+    it('role empty should send response 400 status code', function(done){
+        //setup
+        const body = {
+            firstname:'some',
+            lastname:'one',
+            email: 'b@gmail.com',
+            password: '123456',
+            role: ''
+        };
+        //execute
+        req(app)
+        .post('/register')
+        .send(body)
+        .end(function(err,res){
+            if (err) done(err)
+
+            //assert
+            expect(res.statusCode).toEqual(400)
+            expect(typeof res.body).toEqual('object')
+            expect(res.body).toEqual(
+                expect.arrayContaining(['Validation notEmpty on role failed'])
+            )
+            done()
+        })
+    })
+
+    //invalid email format
+    it('invalid email format should send response 400 status code', function(done){
+        //setup
+        const body = {
+            firstname:'some',
+            lastname:'one',
+            email: 'abcd',
+            password: '123456'
+        };
+        //execute
+        req(app)
+        .post('/register')
+        .send(body)
+        .end(function(err,res){
+            if (err) done(err)
+
+            //assert
+            expect(res.statusCode).toEqual(400)
+            expect(typeof res.body).toEqual('object')
+            expect(res.body).toEqual(
+                expect.arrayContaining(['Validation isEmail on email failed'])
+            )
+            done()
+        })
+    })
+
+    //all empty
     it('empty value should send response 400 status code', function(done){
         //setup
         const body = {
@@ -78,40 +240,14 @@ describe('POST /register',function(){
             done()
         })
     })
-
-    //empty text
-    it('invalid email format should send response 400 status code', function(done){
-        //setup
-        const body = {
-            firstname:'some',
-            lastname:'one',
-            email: 'abcd',
-            password: '123456'
-        };
-        //execute
-        req(app)
-        .post('/register')
-        .send(body)
-        .end(function(err,res){
-            if (err) done(err)
-
-            //assert
-            expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
-            expect(res.body).toEqual(
-                expect.arrayContaining(['Validation isEmail on email failed'])
-            )
-            done()
-        })
-    })
 })
-
+    
 //===================================================================================
 
 //valid
 describe('POST /login',function(){
     beforeAll((done)=>{
-        seeder()
+        seederUser()
         .then(()=>{
             done()
         })
@@ -152,7 +288,7 @@ describe('POST /login',function(){
         })
     })
 
-    //invalid email or password
+    //invalid password
     it('invalid password should send response 404 status code', function(done){
         //setup
         const body = {
@@ -176,6 +312,7 @@ describe('POST /login',function(){
         })
     })
 
+    //invalid email
     it('invalid email should send response 404 status code', function(done){
         //setup
         const body = {
@@ -199,8 +336,8 @@ describe('POST /login',function(){
         })
     })
 
-    //empty email or password
-    it('empty email should send response 404 status code', function(done){
+    //empty email
+    it('empty email should send response 400 status code', function(done){
         //setup
         const body = {
             email: '',
@@ -223,7 +360,8 @@ describe('POST /login',function(){
         })
     })
 
-    it('empty password should send response 404 status code', function(done){
+    //empty password
+    it('empty password should send response 400 status code', function(done){
         //setup
         const body = {
             email: 'a@gmail.com',

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev":"NODE_ENV=development npx nodemon bin/http.js",
-    "test": "NODE_ENV=test npx jest",
+    "test_product": "NODE_ENV=test npx jest __test__/product.test.js",
+    "test_user": "NODE_ENV=test npx jest __test__/user.test.js",
     "db:create": "npx sequelize-cli db:create",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:seeder": "npx sequelize-cli db:seed:all",

@@ -29,7 +29,6 @@ class UserCon{
         if(password == ''){
             next({name:'emptyPassword'})
         }
-        console.log(email+' '+password);
         
         User.findOne({where:{email}})
         .then(data=>{
@@ -37,7 +36,7 @@ class UserCon{
                 let hash = data.password
                 if (compare(password,hash)) {
                     let user = {
-                        id:data.id,email:data.email
+                        id:data.id,email:data.email,role:data.role
                     }
                     let accesstoken = generateToken(user)
                     res.status(200).json({accesstoken})

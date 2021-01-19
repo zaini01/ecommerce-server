@@ -1,6 +1,6 @@
-const {User} = require('../../models/index')
+const {User,Product} = require('../../models/index')
 
-function seeder(done) {
+function seederUser(done) {
     const body = {
         firstname:'some',
         lastname:'one',
@@ -9,10 +9,22 @@ function seeder(done) {
         role: 'admin'
     }
 
-    
     if (process.env.NODE_ENV == 'test') {
         return User.create(body)
     }
 }
 
-module.exports = seeder
+function seederProduct(done) {
+    const body = {
+        name:'card',
+        imageUrl:'url',
+        price: 200000,
+        stock: 20
+    }
+
+    if (process.env.NODE_ENV == 'test') {
+        return Product.create(body)
+    }
+}
+
+module.exports = {seederUser,seederProduct}
