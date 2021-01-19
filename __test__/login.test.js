@@ -153,7 +153,7 @@ describe('POST /login',function(){
     })
 
     //invalid email or password
-    it('invalid email or password should send response 404 status code', function(done){
+    it('invalid password should send response 404 status code', function(done){
         //setup
         const body = {
             email: 'a@gmail.com',
@@ -176,12 +176,35 @@ describe('POST /login',function(){
         })
     })
 
-    //empty email
+    it('invalid email should send response 404 status code', function(done){
+        //setup
+        const body = {
+            email: 'z@gmail.com',
+            password: '123456'
+        }
+        //execute
+        req(app)
+        .post('/login')
+        .send(body)
+        .end(function(err,res){
+            if (err) done(err)
+
+            //assert
+            expect(res.statusCode).toEqual(404)
+            expect(typeof res.body).toEqual('object')
+            expect(res.body).toHaveProperty('message')
+            expect(typeof res.body.message).toEqual('string')
+            expect(res.body.message).toEqual('Invalid email or password')
+            done()
+        })
+    })
+
+    //empty email or password
     it('empty email should send response 404 status code', function(done){
         //setup
         const body = {
             email: '',
-            password: ''
+            password: '123456'
         }
         //execute
         req(app)
@@ -200,7 +223,6 @@ describe('POST /login',function(){
         })
     })
 
-    //empty password
     it('empty password should send response 404 status code', function(done){
         //setup
         const body = {
@@ -224,142 +246,3 @@ describe('POST /login',function(){
         })
     })
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-// describe('POST /login',function(){
-//     //valid
-//     
-//     //invalid password
-//     it('it should send response 404 status code', function(done){
-//         //setup
-//         const body = {
-//             emai: 'a@gmail.com',
-//             password: 'qwerty'
-//         }
-//         //execute
-//         supertest('app')
-//         .post('/login')
-//         .send(body)
-//         .end(function(err,res){
-//             if (err) done(err)
-
-//             //assert
-//             expect(res.statusCode).toEqual(404)
-//             expect(typeof res.body).toEqual('object');
-//             expect(typeof res.body).toHaveProperty('errors')
-//             expect(typeof res.body.errors).toEqual('object')
-//             expect(res.body.errors).toEqual(
-//                 expect.objectContaining({message:'Invalid email or password'})
-//             )
-//             done()
-//         })
-//     })
-//     //invalid email
-//     it('it should send response 404 status code', function(done){
-//         //setup
-//         const body = {
-//             emai: 'asal@gmail.com',
-//             password: '12345'
-//         }
-//         //execute
-//         supertest('app')
-//         .post('/login')
-//         .send(body)
-//         .end(function(err,res){
-//             if (err) done(err)
-
-//             //assert
-//             expect(res.statusCode).toEqual(404)
-//             expect(typeof res.body).toEqual('object');
-//             expect(typeof res.body).toHaveProperty('errors')
-//             expect(typeof res.body.errors).toEqual('object')
-//             expect(res.body.errors).toEqual(
-//                 expect.objectContaining({message:'Invalid email or password'})
-//             )
-//             done()
-//         })
-//     })
