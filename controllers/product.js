@@ -43,9 +43,46 @@ class ProductCon {
 
         Product.destroy({where:{id}})
         .then(data=>{
-            console.log(data);
             if (data==1) {
                 res.status(200).json({message:'Deleted successfully'})
+            } else {
+                next({name: 'notFound'})
+            }
+        })
+        .catch(err=>{
+            next(err)
+        })
+    }
+
+    static findAll(req,res,next){
+        Product.findAll()
+        .then(data=>{
+            res.status(200).json({
+                id:data.id,
+                name:data.name,
+                imageUrl:data.imageUrl,
+                price:data.price,
+                stock:data.stock
+            })
+        })
+        .catch(err=>{
+            next(err)
+        })
+    }
+
+    static findOne(req,res,next){
+        let id = req.params.id
+
+        Product.findOne({where:{id}})
+        .then(data=>{
+            if (data) {
+                res.status(200).json({
+                    id:data.id,
+                    name:data.name,
+                    imageUrl:data.imageUrl,
+                    price:data.price,
+                    stock:data.stock
+                })
             } else {
                 next({name: 'notFound'})
             }

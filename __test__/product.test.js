@@ -7,28 +7,46 @@ const {generateToken} = require('../helper/jwt')
 
 let accesstoken = ''
 let tempId = ''
+afterAll((done)=>{
+    cleanUser()
+    .then(()=>{
+        return cleanProduct()
+    })
+    .then(()=>{
+        done()
+    })
+    .catch(err=>{
+        console.log(err);
+    })
+})
+beforeAll((done)=>{
+    seederUser()
+    .then(()=>{
+        return User.findOne()
+    })
+    .then((data) => {
+        let user = {
+            id:data.id,
+            email:data.email,
+            role:data.role
+        }
+        accesstoken = generateToken(user)
+        return seederProduct()
+        done()
+    })
+    .then(()=>{
+        return Product.findOne()
+    })
+    .then((data)=>{
+        tempId = data.id
+        done()
+    })
+    .catch(err=>{
+        console.log(err);
+    })
+})
 
 describe('POST /product',function(){
-    beforeAll((done)=>{
-        seederUser()
-        .then(()=>{
-            return User.findOne()
-        })
-        .then((data) => {
-            tempId = data.id
-            let user = {
-                id:data.id,
-                email:data.email,
-                role:data.role
-            }
-            accesstoken = generateToken(user)
-            done()
-        })
-        .catch(err=>{
-            console.log(err);
-        })
-    })
-
     //valid
     it('valid add should send response 201 status code', function(done){
         //setup
@@ -231,20 +249,6 @@ describe('POST /product',function(){
 //=================================================================================================
 
 describe('PUT /product/:id',function(){    
-    beforeAll((done)=>{
-        seederProduct()
-        .then(()=>{
-            return Product.findOne()
-        })
-        .then((data)=>{
-            tempId = data.id
-            done()
-        })
-        .catch(err=>{
-            console.log(err);
-        })
-    })
-
     //valid
     it('valid put should send response 200 status code', function(done){
         //setup
@@ -444,22 +448,61 @@ describe('PUT /product/:id',function(){
         })
     })
 }) 
+//=================================================================================================
 
+describe('GET /product/:id',function(){ 
+    //delete
+    it('get by id should send response 200 status code', function(done){
+        //setup
+        //execute
+        req(app)
+        .get(`/product/${tempId}`)
+        .send()
+        .set('accesstoken',accesstoken)
+        .end(function(err,res){
+            if (err) done(err)
+
+            //assert
+            expect(res.statusCode).toEqual(200)
+            expect(typeof res.body).toEqual('object');
+            expect(res.body).toHaveProperty('id')
+            expect(res.body).toHaveProperty('name')
+            expect(res.body).toHaveProperty('imageUrl')
+            expect(res.body).toHaveProperty('price')
+            expect(res.body).toHaveProperty('stock')
+            expect(typeof res.body.id).toEqual('number')
+            expect(typeof res.body.name).toEqual('string')
+            expect(typeof res.body.imageUrl).toEqual('string')
+            expect(typeof res.body.price).toEqual('number')
+            expect(typeof res.body.stock).toEqual('number')
+            done()
+        })
+    })
+})
+//=================================================================================================
+
+describe('GET /product',function(){ 
+    //delete
+    it('get by id should send response 200 status code', function(done){
+        //setup
+        //execute
+        req(app)
+        .get(`/product`)
+        .send()
+        .set('accesstoken',accesstoken)
+        .end(function(err,res){
+            if (err) done(err)
+
+            //assert
+            expect(res.statusCode).toEqual(200)
+            expect(typeof res.body).toEqual('object');
+            done()
+        })
+    })
+})
 //=================================================================================================
 
 describe('DELETE /product/:id',function(){ 
-    afterAll((done)=>{
-        cleanUser()
-        .then(()=>{
-            return cleanProduct()
-        })
-        .then(()=>{
-            done()
-        })
-        .catch(err=>{
-            console.log(err);
-        })
-    })
     //delete
     it('delete should send response 200 status code', function(done){
         //setup

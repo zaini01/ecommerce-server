@@ -1,12 +1,12 @@
-const rout = require('express').Router()
+const routs = require('express').Router()
 const user = require('./user')
 const product = require('./product')
 const {authentication} = require('../midleware/auth')
 
-rout.get('/',(req,res)=>{
+routs.get('/',(req,res)=>{
     res.send({message:'WELCOME'})
 })
-rout.use(user)
-rout.use(authentication)
-rout.use(product)
-module.exports = rout
+routs.use(user)
+routs.use(authentication)
+routs.use(product)
+module.exports = routs

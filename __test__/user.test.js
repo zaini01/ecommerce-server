@@ -3,18 +3,25 @@ const app = require('../app')
 const {cleanUser} = require('./helper/cleanDb')
 const {seederUser} = require('./helper/seeder')
     
-        
-describe('POST /register',function(){
-    afterAll((done)=>{
-        cleanUser()
-        .then(()=>{
-            done()
-        })
-        .catch(err=>{
-            console.log(err);
-        })
+afterAll((done)=>{
+    cleanUser()
+    .then(()=>{
+        done()
     })
-
+    .catch(err=>{
+        console.log(err);
+    })
+})
+beforeAll((done)=>{
+    seederUser()
+    .then(()=>{
+        done()
+    })
+    .catch(err=>{
+        console.log(err);
+    })
+})
+describe('POST /register',function(){
     //valid
     it('valid register should send response 201 status code', function(done){
         //setup
@@ -246,26 +253,6 @@ describe('POST /register',function(){
 
 //valid
 describe('POST /login',function(){
-    beforeAll((done)=>{
-        seederUser()
-        .then(()=>{
-            done()
-        })
-        .catch(err=>{
-            console.log(err);
-        })
-    })
-
-    afterAll((done)=>{
-        cleanUser()
-        .then(()=>{
-            done()
-        })
-        .catch(err=>{
-            console.log(err);
-        })
-    })
-
     it('valid login should send response 200 status code', function(done){
         //setup
         const body = {
