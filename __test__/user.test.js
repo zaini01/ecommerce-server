@@ -269,8 +269,11 @@ describe('POST /login',function(){
             //assert
             expect(res.statusCode).toEqual(200)
             expect(typeof res.body).toEqual('object');
-            expect(res.body).toHaveProperty('accesstoken')
-            expect(typeof res.body.accesstoken).toEqual('string')
+            expect(res.body).toHaveProperty('payload')
+            expect(res.body.payload).toHaveProperty('accesstoken')
+            expect(res.body.payload).toHaveProperty('role')
+            expect(typeof res.body.payload.accesstoken).toEqual('string')
+            expect(typeof res.body.payload.role).toEqual('string')
             done()
         })
     })

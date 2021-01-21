@@ -38,8 +38,11 @@ class UserCon{
                     let user = {
                         id:data.id,email:data.email,role:data.role
                     }
-                    let accesstoken = generateToken(user)
-                    res.status(200).json({accesstoken})
+                    let payload = {
+                        accesstoken: generateToken(user),
+                        role: data.role
+                    }
+                    res.status(200).json({payload})
                 } else {
                     next({name:'invalidLogin'})
                 }
