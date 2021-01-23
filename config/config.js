@@ -16,10 +16,6 @@ module.exports = {
     username,password,database,host,dialect
   },
   "production": {
-    "use_env_variable": "DATABASE_URL",
-    "dialect": "postgres",
-    "dialectOptions": {
-        "ssl": true
-    }
+    "use_env_variable": "DATABASE_URL"
   }
 }
