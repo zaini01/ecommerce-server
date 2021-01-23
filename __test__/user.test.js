@@ -2,6 +2,10 @@ const req = require('supertest')
 const app = require('../app')
 const {cleanUser} = require('./helper/cleanDb')
 const {seederUser} = require('./helper/seeder')
+const {User} = require('../models/index')
+const {generateToken} = require('../helper/jwt')
+
+let accesstoken = ''
     
 afterAll((done)=>{
     cleanUser()
@@ -15,6 +19,15 @@ afterAll((done)=>{
 beforeAll((done)=>{
     seederUser()
     .then(()=>{
+        return User.findOne()
+    })
+    .then((data) => {
+        let user = {
+            id:data.id,
+            email:data.email,
+            role:data.role
+        }
+        accesstoken = generateToken(user)
         done()
     })
     .catch(err=>{
@@ -370,6 +383,27 @@ describe('POST /login',function(){
             expect(res.body).toHaveProperty('message')
             expect(typeof res.body.message).toEqual('string')
             expect(res.body.message).toEqual('Password is required')
+            done()
+        })
+    })
+})
+
+describe('POST /checktoken',function(){
+    //checktoken
+    it('valid checktoken should send response 201 status code', function(done){
+        //setup
+        //execute
+        req(app)
+        .post(`/checktoken`)
+        .send()
+        .set('accesstoken',accesstoken)
+        .end(function(err,res){
+            if (err) done(err)
+
+            //assert
+            expect(res.statusCode).toEqual(200)
+            expect(typeof res.body).toEqual('string')
+            expect(res.body).toEqual('admin')
             done()
         })
     })

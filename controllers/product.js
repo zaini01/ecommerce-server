@@ -57,22 +57,15 @@ class ProductCon {
     static findAll(req,res,next){
         Product.findAll()
         .then(data=>{
-            res.status(200).json({
-                id:data.id,
-                name:data.name,
-                imageUrl:data.imageUrl,
-                price:data.price,
-                stock:data.stock
-            })
+            res.status(200).json({data})
         })
         .catch(err=>{
-            next(err)
+            next({name: 'notFound'})
         })
     }
 
     static findOne(req,res,next){
         let id = req.params.id
-
         Product.findOne({where:{id}})
         .then(data=>{
             if (data) {

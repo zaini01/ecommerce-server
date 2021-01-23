@@ -1,6 +1,7 @@
 const {User} = require('../models/index')
 const {compare} = require('../helper/bcrypt')
 const {generateToken} = require('../helper/jwt')
+const {decodeToken} = require('../helper/jwt')
 
 class UserCon{
     static register(req,res,next){
@@ -46,6 +47,23 @@ class UserCon{
                 } else {
                     next({name:'invalidLogin'})
                 }
+            }else{
+                next({name:'invalidLogin'})
+            }
+        })
+        .catch(err=>{
+            next(err)
+        })
+    }
+
+    static checktoken(req,res,next){
+        let token = req.headers.accesstoken
+        let user = decodeToken(token)
+        let email = user.email
+        User.findOne({where:{email}})
+        .then(data=>{
+            if (data) {
+                res.status(200).json(data.role)
             }else{
                 next({name:'invalidLogin'})
             }

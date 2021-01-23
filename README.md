@@ -193,3 +193,33 @@ _Response (500 - Internal Server Error)_
 ```
 {<errors message>}
 ```
+### POST /checktoken
+
+>delete existing product
+
+_Request Header_
+```
+"<access token>"
+```
+_Request Params_
+```
+"not needed"
+```
+_Request Body_
+```
+not needed
+```
+_Response (200 - Submited)_
+```
+{
+    'role': '<role user>'
+}
+```
+_Response (404 - Not Found)_
+```
+[<error message>]
+```
+_Response (500 - Internal Server Error)_
+```
+{<errors message>}
+```

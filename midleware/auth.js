@@ -3,7 +3,6 @@ const {User} = require('../models/index')
 
 function authentication(req,res,next){
     let user = decodeToken(req.headers.accesstoken)
-    
     req.loginUser = user
     User.findByPk(user.id)
     .then(data=>{
