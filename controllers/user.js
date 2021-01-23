@@ -1,6 +1,7 @@
 const {User} = require('../models/index')
 const {compare} = require('../helper/bcrypt')
 const {generateToken} = require('../helper/jwt')
+const {decodeToken} = require('../helper/jwt')
 
 class UserCon{
     static register(req,res,next){
@@ -29,7 +30,6 @@ class UserCon{
         if(password == ''){
             next({name:'emptyPassword'})
         }
-        console.log(email+' '+password);
         
         User.findOne({where:{email}})
         .then(data=>{
@@ -37,13 +37,33 @@ class UserCon{
                 let hash = data.password
                 if (compare(password,hash)) {
                     let user = {
-                        id:data.id,email:data.email
+                        id:data.id,email:data.email,role:data.role
                     }
-                    let accesstoken = generateToken(user)
-                    res.status(200).json({accesstoken})
+                    let payload = {
+                        accesstoken: generateToken(user),
+                        role: data.role
+                    }
+                    res.status(200).json({payload})
                 } else {
                     next({name:'invalidLogin'})
                 }
+            }else{
+                next({name:'invalidLogin'})
+            }
+        })
+        .catch(err=>{
+            next(err)
+        })
+    }
+
+    static checktoken(req,res,next){
+        let token = req.headers.accesstoken
+        let user = decodeToken(token)
+        let email = user.email
+        User.findOne({where:{email}})
+        .then(data=>{
+            if (data) {
+                res.status(200).json(data.role)
             }else{
                 next({name:'invalidLogin'})
             }

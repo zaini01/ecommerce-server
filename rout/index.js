@@ -1,8 +1,10 @@
-const rout = require('express').Router()
+const routs = require('express').Router()
 const user = require('./user')
+const product = require('./product')
 
-rout.get('/',(req,res)=>{
+routs.get('/',(req,res)=>{
     res.send({message:'WELCOME'})
 })
-rout.use(user)
-module.exports = rout
+routs.use(user)
+routs.use(product)
+module.exports = routs
