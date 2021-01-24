@@ -55,7 +55,7 @@ class ProductCon {
     }
 
     static findAll(req,res,next){
-        Product.findAll()
+        Product.findAll({order: [[ 'createdAt', 'DESC' ]]})
         .then(data=>{
             res.status(200).json({data})
         })
