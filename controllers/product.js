@@ -9,7 +9,8 @@ class ProductCon {
                 name:data.name,
                 imageUrl:data.imageUrl,
                 price:data.price,
-                stock:data.stock
+                stock:data.stock,
+                category:data.category
             })
         })
         .catch(err=>{
@@ -30,7 +31,8 @@ class ProductCon {
                 name:data.name,
                 imageUrl:data.imageUrl,
                 price:data.price,
-                stock:data.stock
+                stock:data.stock,
+                category:data.category
             })
         })
         .catch(err=>{
@@ -74,7 +76,8 @@ class ProductCon {
                     name:data.name,
                     imageUrl:data.imageUrl,
                     price:data.price,
-                    stock:data.stock
+                    stock:data.stock,
+                    category:data.category
                 })
             } else {
                 next({name: 'notFound'})

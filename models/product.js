@@ -37,6 +37,12 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         min: [0]
       }
+    },
+    category: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true
+      }
     }
   }, {
     sequelize,
