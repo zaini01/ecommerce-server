@@ -49,6 +49,10 @@ function errorHandler(err, req, res, next) {
             res.status(400).json({message:'Password is required'})
 
             break;
+        case 'InvalidStock':
+            res.status(400).json({message:'Invalid Stock'})
+
+            break;
         default:
             if (err.name) {
                 res.status(500).json({message:'Internal server error'})

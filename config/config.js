@@ -10,10 +10,18 @@ const dialect = process.env['DB_DIALECT_' +uppercasedEnv]
 
 module.exports = {
   "development": {
-    username,password,database,host,dialect
+    "username": "postgres",
+    "password": "postgres",
+    "database": "ecommers-DEV",
+    "host": "localhost",
+    "dialect": "postgres"
   },
   "test": {
-    username,password,database,host,dialect
+    "username": "postgres",
+    "password": "postgres",
+    "database": "ecommers-test",
+    "host": "127.0.0.1",
+    "dialect": "mysqpostgresl"
   },
   "production": {
     "use_env_variable": "DATABASE_URL"
