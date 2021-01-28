@@ -18,7 +18,6 @@ class WishListCon {
 
     static delete (req, res, next) {
         let ProductId = req.params.id
-        console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'+ProductId);
         WishList.destroy({where: {ProductId}})
         .then(data => {
             res.status(200).json({message: 'Deleted.'})
