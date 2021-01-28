@@ -1,8 +1,8 @@
-const {WishList} = require('../models/index')
+const {WishList, User, Product} = require('../models/index')
 
 class WishListCon {
 
-    static add (req, res) {
+    static add (req, res, next) {
         let wishlist = {
             UserId: req.loginUser.id,
             ProductId: req.params.id,
@@ -16,11 +16,22 @@ class WishListCon {
         })
     }
 
-    static delete (req, res) {
-        let id = params.idwishlist
-        WishList.destroy({where: {id}})
+    static delete (req, res, next) {
+        let ProductId = req.params.id
+        console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'+ProductId);
+        WishList.destroy({where: {ProductId}})
         .then(data => {
             res.status(200).json({message: 'Deleted.'})
+        })
+        .catch(err => {
+            next(err)
+        })
+    }
+
+    static findAll (req, res, next) {
+        User.findOne({ where: { id: req.loginUser.id, }, include: Product })
+        .then(data => {
+            res.status(200).json(data.Products)
         })
         .catch(err => {
             next(err)

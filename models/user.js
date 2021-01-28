@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       User.hasMany(models.Cart)
-      User.hasMany(models.WishList)
+      User.belongsToMany(models.Product, { through: 'WishList' })
     }
   };
   User.init({

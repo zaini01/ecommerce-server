@@ -2,6 +2,26 @@ const {Cart, CartList, Product} = require('../models/index')
 const {sequelize} = require('../models/index')
 
 class CartCon {
+    static findUnpaid (req, res, next) {
+        Cart.findOne({
+            where: {
+                UserId: req.loginUser.id,
+                status: 'UNPAID'
+            },
+            include: Product
+        })
+        .then(data => {
+            if (data) {
+                res.status(200).json(data.Products)
+            } else (
+                res.status(200).json([])
+            )
+        })
+        .catch(err => {
+            next(err)
+        })
+    }
+
     static async addToCart (req, res, next) {
         let currentStock = 0
         let cart = {
@@ -13,7 +33,12 @@ class CartCon {
         }
         await Product.findOne({where: {id: cart.ProductId}})
         .then(data => {
-            currentStock = +data.stock
+            if (data) {
+                currentStock = +data.stock
+            } else {
+                currentStock = 0
+            }
+            
         })
         .catch(err => {
             next(err)
@@ -106,14 +131,17 @@ class CartCon {
     }
 
     static put (req, res, next) {
-        let id = req.params.idcartlist
+        let CartId = req.params.cartid
+        let ProductId = req.params.id
         let cart = {
             qty: req.body.qty,
             currentPrice: req.body.currentPrice
         }
-        // update product in cart list
+
         CartList.update(cart, {
-            where: {id}
+            where: {
+                CartId, ProductId
+            }
         })
         .then(data => {
             res.status(200).json({message: 'Success update product in cart list.'})
@@ -124,9 +152,10 @@ class CartCon {
     }
 
     static delete (req, res, next) {
-        let id = req.params.idcartlist
+        let ProductId = req.params.id
+        let CartId = req.params.cartid
         // delete cart list
-        CartList.destroy({where:{id}})
+        CartList.destroy({where:{ ProductId, CartId }})
         .then(data => {
             res.status(200).json({message: 'Deleted.'})
         })
@@ -136,12 +165,12 @@ class CartCon {
     }
 
     static deleteCart (req, res, next) {
-        let id = req.params.idcart
+        let CartId = req.params.cartid
 
-        Cart.destroy({where:{id}})
+        Cart.destroy({where:{ id:CartId }})
         .then(data => {
             // delete cart
-            return CartList.destroy({where: {CartId: id}})
+            return CartList.destroy({where: { CartId }})
         })
         .then(data => {
             // delete cart list
@@ -156,16 +185,16 @@ class CartCon {
         let cart = {
             UserId: req.loginUser.id,
             ProductId: req.params.id,
-            CartId: req.params.idcart 
+            CartId: req.params.cartid 
         }
 
         const t = await sequelize.transaction()
         try {
             
-            await CartList.findAll({ where: { CartId: req.params.idcart } })
+            await CartList.findAll({ where: { CartId: req.params.cartid } })
             .then(cartlists => {
                 cartlists.forEach(e => {
-                    Product.findOne({ where: {id: cart.ProductId } })
+                    Product.findOne({ where: {id: e.ProductId } })
                     .then(product => {
                         Product.update({ stock: (+product.stock - +e.qty) }, { where: { id: e.ProductId } }, { transaction: t })
                     })
@@ -173,9 +202,9 @@ class CartCon {
             })
 
             await Cart.update({ status: 'PAID' },{ where: { id: cart.CartId } }, { transaction: t })
-            
-            await t.commit()
-            
+            res.send(200).json({ message: 'Checkout success.' })
+            await t.commit() 
+
         } catch (err) {
             await t.rollback();
             next(err)
