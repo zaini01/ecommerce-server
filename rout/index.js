@@ -7,4 +7,5 @@ routs.get('/',(req,res)=>{
 })
 routs.use(user)
 routs.use(product)
+
 module.exports = routs
