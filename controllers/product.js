@@ -59,10 +59,14 @@ class ProductCon {
     static findAll(req,res,next){
         Product.findAll({order: [[ 'createdAt', 'DESC' ]]})
         .then(data=>{
-            res.status(200).json({data})
+            if (data) {
+                res.status(200).json({data})
+            } else {
+                next({name: 'notFound'})
+            }
         })
         .catch(err=>{
-            next({name: 'notFound'})
+            next(err)
         })
     }
 
