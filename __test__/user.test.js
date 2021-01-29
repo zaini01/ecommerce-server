@@ -6,14 +6,14 @@ const {User} = require('../models/index')
 const {generateToken} = require('../helper/jwt')
 
 let accesstoken = ''
-    
+let id = ''
 afterAll((done)=>{
     cleanUser()
     .then(()=>{
         done()
     })
     .catch(err=>{
-        console.log(err);
+        done(err)
     })
 })
 beforeAll((done)=>{
@@ -22,6 +22,7 @@ beforeAll((done)=>{
         return User.findOne()
     })
     .then((data) => {
+        id = data.id
         let user = {
             id:data.id,
             email:data.email,
@@ -31,7 +32,7 @@ beforeAll((done)=>{
         done()
     })
     .catch(err=>{
-        console.log(err);
+        done(err)
     })
 })
 describe('POST /register',function(){
@@ -51,7 +52,6 @@ describe('POST /register',function(){
         .send(body)
         .end(function(err,res){
             if (err) done(err)
-
             //assert
             expect(res.statusCode).toEqual(201)
             expect(typeof res.body).toEqual('object');
@@ -65,10 +65,14 @@ describe('POST /register',function(){
             expect(typeof res.body.lastname).toEqual('string')
             expect(typeof res.body.email).toEqual('string')
             expect(typeof res.body.role).toEqual('string')
+            expect(res.body.id).toEqual(expect.any(Number))
+            expect(res.body.firstname).toBe('some')
+            expect(res.body.lastname).toBe('one')
+            expect(res.body.email).toBe('b@gmail.com')
+            expect(res.body.role).toBe('admin')
             done()
         })
     })
-
     //firstname empty
     it('firstname empty should send response 400 status code', function(done){
         //setup
@@ -85,17 +89,14 @@ describe('POST /register',function(){
         .send(body)
         .end(function(err,res){
             if (err) done(err)
-
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation notEmpty on firstname failed'])
             )
             done()
         })
     })
-
     //lastname empty
     it('lastname empty should send response 400 status code', function(done){
         //setup
@@ -112,17 +113,14 @@ describe('POST /register',function(){
         .send(body)
         .end(function(err,res){
             if (err) done(err)
-
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation notEmpty on lastname failed'])
             )
             done()
         })
     })
-
     //email empty
     it('email empty should send response 400 status code', function(done){
         //setup
@@ -139,17 +137,14 @@ describe('POST /register',function(){
         .send(body)
         .end(function(err,res){
             if (err) done(err)
-
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation notEmpty on email failed'])
             )
             done()
         })
     })
-
     //password empty
     it('password empty should send response 400 status code', function(done){
         //setup
@@ -169,14 +164,12 @@ describe('POST /register',function(){
 
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation notEmpty on password failed'])
             )
             done()
         })
     })
-
     //role empty
     it('role empty should send response 400 status code', function(done){
         //setup
@@ -193,17 +186,14 @@ describe('POST /register',function(){
         .send(body)
         .end(function(err,res){
             if (err) done(err)
-
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation notEmpty on role failed'])
             )
             done()
         })
     })
-
     //invalid email format
     it('invalid email format should send response 400 status code', function(done){
         //setup
@@ -219,17 +209,14 @@ describe('POST /register',function(){
         .send(body)
         .end(function(err,res){
             if (err) done(err)
-
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation isEmail on email failed'])
             )
             done()
         })
     })
-
     //all empty
     it('empty value should send response 400 status code', function(done){
         //setup
@@ -246,10 +233,8 @@ describe('POST /register',function(){
         .send(body)
         .end(function(err,res){
             if (err) done(err)
-
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation notEmpty on firstname failed']),
                 expect.arrayContaining(['Validation notEmpty on lastname failed']),
@@ -287,6 +272,8 @@ describe('POST /login',function(){
             expect(res.body.payload).toHaveProperty('role')
             expect(typeof res.body.payload.accesstoken).toEqual('string')
             expect(typeof res.body.payload.role).toEqual('string')
+            expect(res.body.payload.accesstoken).toEqual(expect.any(String))
+            expect(res.body.payload.role).toBe('admin')
             done()
         })
     })
@@ -383,6 +370,29 @@ describe('POST /login',function(){
             expect(res.body).toHaveProperty('message')
             expect(typeof res.body.message).toEqual('string')
             expect(res.body.message).toEqual('Password is required')
+            done()
+        })
+    })
+    //empty email and password
+    it('empty email and password should send response 400 status code', function(done){
+        //setup
+        const body = {
+            email: '',
+            password: ''
+        }
+        //execute
+        req(app)
+        .post('/login')
+        .send(body)
+        .end(function(err,res){
+            if (err) done(err)
+
+            //assert
+            expect(res.statusCode).toEqual(400)
+            expect(typeof res.body).toEqual('object')
+            expect(res.body).toHaveProperty('message')
+            expect(typeof res.body.message).toEqual('string')
+            expect(res.body.message).toEqual('Email is required')
             done()
         })
     })

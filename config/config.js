@@ -21,7 +21,7 @@ module.exports = {
     "password": "postgres",
     "database": "ecommers-test",
     "host": "127.0.0.1",
-    "dialect": "mysqpostgresl"
+    "dialect": "postgres"
   },
   "production": {
     "use_env_variable": "DATABASE_URL"

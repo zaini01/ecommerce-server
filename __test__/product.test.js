@@ -32,7 +32,6 @@ beforeAll((done)=>{
         }
         accesstoken = generateToken(user)
         return seederProduct()
-        done()
     })
     .then(()=>{
         return Product.findOne()
@@ -42,7 +41,7 @@ beforeAll((done)=>{
         done()
     })
     .catch(err=>{
-        console.log(err);
+        done(err)
     })
 })
 
@@ -78,6 +77,11 @@ describe('POST /product',function(){
             expect(typeof res.body.imageUrl).toEqual('string')
             expect(typeof res.body.price).toEqual('number')
             expect(typeof res.body.stock).toEqual('number')
+            expect(res.body.id).toEqual(expect.any(Number))
+            expect(res.body.name).toBe('card')
+            expect(res.body.imageUrl).toBe('url')
+            expect(res.body.price).toBe(100000)
+            expect(res.body.stock).toBe(10)
             done()
         })
     })
@@ -130,7 +134,6 @@ describe('POST /product',function(){
 
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation notEmpty on imageUrl failed'])
             )
@@ -158,7 +161,6 @@ describe('POST /product',function(){
 
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('string')
             expect(res.body).toEqual('invalid input syntax for type integer: ""')
             done()
         })
@@ -184,7 +186,6 @@ describe('POST /product',function(){
 
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('string')
             expect(res.body).toEqual('invalid input syntax for type integer: "ABC"')
             done()
         })
@@ -210,7 +211,6 @@ describe('POST /product',function(){
 
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation min on price failed'])
             )
@@ -238,7 +238,6 @@ describe('POST /product',function(){
 
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation min on stock failed'])
             )
@@ -280,6 +279,11 @@ describe('PUT /product/:id',function(){
             expect(typeof res.body.imageUrl).toEqual('string')
             expect(typeof res.body.price).toEqual('number')
             expect(typeof res.body.stock).toEqual('number')
+            expect(res.body.id).toEqual(expect.any(Number))
+            expect(res.body.name).toBe('card2')
+            expect(res.body.imageUrl).toBe('url2')
+            expect(res.body.price).toBe(200000)
+            expect(res.body.stock).toBe(20)
             done()
         })
     })
@@ -304,7 +308,6 @@ describe('PUT /product/:id',function(){
 
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation notEmpty on name failed'])
             )
@@ -332,7 +335,6 @@ describe('PUT /product/:id',function(){
 
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation notEmpty on imageUrl failed'])
             )
@@ -360,7 +362,6 @@ describe('PUT /product/:id',function(){
 
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('string')
             expect(res.body).toEqual('invalid input syntax for type integer: ""')
             done()
         })
@@ -386,7 +387,6 @@ describe('PUT /product/:id',function(){
 
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('string')
             expect(res.body).toEqual('invalid input syntax for type integer: "ABC"')
             done()
         })
@@ -412,7 +412,6 @@ describe('PUT /product/:id',function(){
 
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation min on price failed'])
             )
@@ -440,7 +439,6 @@ describe('PUT /product/:id',function(){
 
             //assert
             expect(res.statusCode).toEqual(400)
-            expect(typeof res.body).toEqual('object')
             expect(res.body).toEqual(
                 expect.arrayContaining(['Validation min on stock failed'])
             )
@@ -475,6 +473,11 @@ describe('GET /product/:id',function(){
             expect(typeof res.body.imageUrl).toEqual('string')
             expect(typeof res.body.price).toEqual('number')
             expect(typeof res.body.stock).toEqual('number')
+            expect(res.body.id).toEqual(expect.any(Number))
+            expect(res.body.name).toBe('card2')
+            expect(res.body.imageUrl).toBe('url2')
+            expect(res.body.price).toBe(200000)
+            expect(res.body.stock).toBe(20)
             done()
         })
     })
@@ -487,7 +490,7 @@ describe('GET /product',function(){
         //setup
         //execute
         req(app)
-        .get(`/product`)
+        .get(`/product/${tempId}`)
         .send()
         .set('accesstoken',accesstoken)
         .end(function(err,res){
@@ -496,6 +499,10 @@ describe('GET /product',function(){
             //assert
             expect(res.statusCode).toEqual(200)
             expect(typeof res.body).toEqual('object');
+            expect(res.body.name).toBe('card2')
+            expect(res.body.imageUrl).toBe('url2')
+            expect(res.body.price).toBe(200000)
+            expect(res.body.stock).toBe(20)
             done()
         })
     })

@@ -1,6 +1,6 @@
 const {User,Product} = require('../../models/index')
 
-function seederUser(done) {
+function seederUser() {
     const body = {
         firstname:'some',
         lastname:'one',
@@ -14,7 +14,7 @@ function seederUser(done) {
     }
 }
 
-function seederProduct(done) {
+function seederProduct() {
     const body = {
         name:'card',
         imageUrl:'url',
